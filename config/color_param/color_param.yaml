@@ -1,0 +1,49 @@
+# color param
+color_param:
+  - name: RED
+    lower_h: 130
+    lower_s: 180
+    lower_v: 80
+    upper_h: 180
+    upper_s: 230
+    upper_v: 180
+  
+  - name: BLUE
+    lower_h: 95
+    lower_s: 210
+    lower_v: 40
+    upper_h: 110
+    upper_s: 255
+    upper_v: 180
+  
+  - name: YELLOW
+    lower_h: 20
+    lower_s: 120
+    lower_v: 90
+    upper_h: 40
+    upper_s: 210
+    upper_v: 255
+  
+  - name: GREEN
+    lower_h: 60
+    lower_s: 100
+    lower_v: 50
+    upper_h: 100
+    upper_s: 230
+    upper_v: 100
+  
+  - name: ORANGE
+    lower_h: 10
+    lower_s: 80
+    lower_v: 120
+    upper_h: 20
+    upper_s: 200
+    upper_v: 200
+  
+  - name: PURPLE
+    lower_h: 110
+    lower_s: 80
+    lower_v: 40
+    upper_h: 150
+    upper_s: 230
+    upper_v: 100
