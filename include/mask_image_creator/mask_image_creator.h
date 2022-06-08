@@ -18,27 +18,27 @@
 class MaskImageCreator
 {
 public:
-	MaskImageCreator();
-	~MaskImageCreator();
-	void process();
+    MaskImageCreator();
+    ~MaskImageCreator();
+    void process();
 
 private:
-	void image_callback(const sensor_msgs::ImageConstPtr& msg);
-	void load_color_param();
-	void mask_image(cv::Mat& img);
+    void image_callback(const sensor_msgs::ImageConstPtr& msg);
+    void load_color_param();
+    void mask_image(cv::Mat& img);
 
-	ros::NodeHandle nh_;
-	ros::NodeHandle private_nh_;
+    ros::NodeHandle nh_;
+    ros::NodeHandle private_nh_;
 
-	ros::Subscriber image_sub_;
-	image_transport::ImageTransport it_;
-	image_transport::Publisher image_pub_;
+    ros::Subscriber image_sub_;
+    image_transport::ImageTransport it_;
+    image_transport::Publisher image_pub_;
 
-	XmlRpc::XmlRpcValue color_param_list_;
+    XmlRpc::XmlRpcValue color_param_list_;
     std::vector<ColorParam> color_params_;
 
-	std::string WINDOW_NAME_;
-	int HZ_;
+    std::string WINDOW_NAME_;
+    int HZ_;
 };
 
-#endif	// MASK_IMAGE_CREATOR_H_
+#endif  // MASK_IMAGE_CREATOR_H_

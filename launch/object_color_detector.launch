@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <launch>
-	<arg name="roomba" default="roomba1" />
-	<arg name="is_rviz" default="true" />
-	<arg name="is_pcl_tf" default="false" />
-	<arg name="is_tf" default="true" />
-	<arg name="config_path" default="$(find object_color_detector)/config" />
-	<arg name="hz" default="10" />
+    <arg name="roomba" default="roomba1" />
+    <arg name="is_rviz" default="true" />
+    <arg name="is_pcl_tf" default="false" />
+    <arg name="is_tf" default="true" />
+    <arg name="config_path" default="$(find object_color_detector)/config" />
+    <arg name="hz" default="10" />
 
-	<!-- object_color_detector_node -->
-	<node pkg="object_color_detector" type="object_color_detector_node" name="object_color_detector_node" output="screen" >
-		<!-- topic name -->
-		<remap from="/camera/depth_registered/points" to="$(arg roomba)/camera/depth_registered/points" />
-		<remap from="/bounding_boxes" to="$(arg roomba)/bounding_boxes" />
-		<remap from="/target_cloud" to="$(arg roomba)/target_cloud" />
+    <!-- object_color_detector_node -->
+    <node pkg="object_color_detector" type="object_color_detector_node" name="object_color_detector_node" output="screen" >
+        <!-- topic name -->
+        <remap from="/camera/depth_registered/points" to="$(arg roomba)/camera/depth_registered/points" />
+        <remap from="/bounding_boxes" to="$(arg roomba)/bounding_boxes" />
+        <remap from="/target_cloud" to="$(arg roomba)/target_cloud" />
 
-		<!-- parameters -->
-		<param name="HZ" value="$(arg hz)" />
-		<param name="is_pcl_tf" value="$(arg is_pcl_tf)" />
-		<rosparam command="load" file="$(arg config_path)/color_param/color_param.yaml" />
-	</node>
+        <!-- parameters -->
+        <param name="HZ" value="$(arg hz)" />
+        <param name="is_pcl_tf" value="$(arg is_pcl_tf)" />
+        <rosparam command="load" file="$(arg config_path)/color_param/color_param.yaml" />
+    </node>
 
-	<!-- tf -->
-	<group if="$(arg is_tf)" >
-		<node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0.668 0 0 0 1 $(arg roomba)/base_link $(arg roomba)/camera_color_optical_frame" />
-	</group>
+    <!-- tf -->
+    <group if="$(arg is_tf)" >
+        <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0.668 0 0 0 1 $(arg roomba)/base_link $(arg roomba)/camera_color_optical_frame" />
+    </group>
 
-	<!-- rviz -->
-	<group if="$(arg is_rviz)" >
-		<node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/object_color_detector.rviz" />	
-	</group>
+    <!-- rviz -->
+    <group if="$(arg is_rviz)" >
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/object_color_detector.rviz" />
+    </group>
 
 </launch>
