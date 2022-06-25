@@ -14,8 +14,10 @@
 #include <pcl/point_types_conversion.h>
 #include <pcl_ros/transforms.h>
 
+// Eigen
 #include <Eigen/Dense>
 
+// Custom msg
 #include "color_param/color_param.h"
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
@@ -34,31 +36,38 @@ private:
     void clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud);
     void mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud);
 
+    // node handle
     ros::NodeHandle nh_;
     ros::NodeHandle private_nh_;
 
+    // subscriber
     ros::Subscriber pc_sub_;
     ros::Subscriber bbox_sub_;
+
+    // publisher
     ros::Publisher pc_pub_;
     ros::Publisher target_pc_pub_;
     ros::Publisher mask_pc_pub_;
 
+    // point cloud
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_;
 
+    // tf
     boost::shared_ptr<tf2_ros::Buffer> buffer_;
     boost::shared_ptr<tf2_ros::TransformListener> listener_;
     boost::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
 
+    // for loading color param
     XmlRpc::XmlRpcValue color_param_list_;
     std::vector<ColorParam> color_params_;
 
-    std::string target_object_name_;
-    std::string base_link_frame_id_;
     std::string pc_frame_id_;
-
     bool has_received_pc_;
-    bool is_pcl_tf_;
 
+    // parameters
+    std::string CAMERA_FRAME_ID_;
+    std::string TARGET_OBJECT_NAME_;
+    bool IS_PCL_TF_;
     int HZ_;
     int COLOR_TH_;
     static const int CLUSTER_NUM_ = 3;

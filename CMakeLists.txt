@@ -48,11 +48,17 @@ add_executable(object_color_detector_node
     src/object_color_detector.cpp
     src/object_color_detector_node.cpp
 )
-target_link_libraries(object_color_detector_node ${catkin_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries(object_color_detector_node
+    ${catkin_LIBRARIES}
+    ${PCL_LIBRARIES}
+)
 
 # mask_image_creator
 add_executable(mask_image_creator_node
     src/mask_image_creator.cpp
     src/mask_image_creator_node.cpp
 )
-target_link_libraries(mask_image_creator_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(mask_image_creator_node
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBRARIES}
+)

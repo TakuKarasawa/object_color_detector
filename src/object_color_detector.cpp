@@ -2,21 +2,19 @@
 
 ObjectColorDetector::ObjectColorDetector() :
     private_nh_("~"),
-    has_received_pc_(false),
-    cloud_(new pcl::PointCloud<pcl::PointXYZRGB>)
+    cloud_(new pcl::PointCloud<pcl::PointXYZRGB>),
+    has_received_pc_(false)
 {
+    private_nh_.param("CAMERA_FRAME_ID",CAMERA_FRAME_ID_,{std::string("base_link")});
+    private_nh_.param("TARGET_OBJECT_NAME",TARGET_OBJECT_NAME_,{std::string("roomba")});
+    private_nh_.param("IS_PCL_TF",IS_PCL_TF_,{false});
     private_nh_.param("HZ",HZ_,{10});
     private_nh_.param("COLOR_TH",COLOR_TH_,{1000});
     private_nh_.param("CLUSTER_TOLERANCE",CLUSTER_TOLERANCE_,{0.02});
     private_nh_.param("MIN_CLUSTER_SIZE",MIN_CLUSTER_SIZE_,{100});
 
-    private_nh_.param("is_pcl_tf",is_pcl_tf_,{false});
-    private_nh_.param("base_link_frame_id",base_link_frame_id_,{"base_link"});
-    private_nh_.param("target_object_name",target_object_name_,{"roomba"});
-
     pc_sub_ = nh_.subscribe("/camera/depth_registered/points",1,&ObjectColorDetector::pc_callback,this);
     bbox_sub_ = nh_.subscribe("/bounding_boxes",1,&ObjectColorDetector::bbox_callback,this);
-
     pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/target_cloud",1);
     target_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/clustered_target_cloud",1);
     mask_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/mask_cloud",1);
@@ -70,10 +68,10 @@ void ObjectColorDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& ms
     cloud_->clear();
     pcl::fromROSMsg(*msg,*cloud_);
     pc_frame_id_ = msg->header.frame_id;
-    if(is_pcl_tf_){
+    if(IS_PCL_TF_){
         geometry_msgs::TransformStamped transform_stamped;
         try{
-            transform_stamped = buffer_->lookupTransform(base_link_frame_id_,msg->header.frame_id,ros::Time(0));
+            transform_stamped = buffer_->lookupTransform(CAMERA_FRAME_ID_,msg->header.frame_id,ros::Time(0));
         }
         catch(tf2::TransformException& ex){
             ROS_WARN("%s", ex.what());
@@ -104,7 +102,7 @@ void ObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesCon
             }
 
             if(!(bbox.xmin == 0 && bbox.xmax == 0)){
-                if(bbox.Class == target_object_name_){
+                if(bbox.Class == TARGET_OBJECT_NAME_){
                     for(int x = bbox.xmin; x < bbox.xmax; x++){
                         for(int y = bbox.ymin; y < bbox.ymax; y++){
                             values.push_back(rearranged_points.at(y).at(x));

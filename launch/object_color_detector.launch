@@ -16,7 +16,7 @@
 
         <!-- parameters -->
         <param name="HZ" value="$(arg hz)" />
-        <param name="is_pcl_tf" value="$(arg is_pcl_tf)" />
+        <param name="IS_PCL_TF" value="$(arg is_pcl_tf)" />
         <rosparam command="load" file="$(arg config_path)/color_param/color_param.yaml" />
     </node>
 
