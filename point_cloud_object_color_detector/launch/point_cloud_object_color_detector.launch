@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="roomba" default="roomba1" />
+	<arg name="is_rviz" default="true" />
+    <arg name="is_pcl_tf" default="false" />
+    <arg name="is_tf" default="true" />
+	<arg name="hz" default="10" />
+	<arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
+    <arg name="color_param_path" default="$(find object_color_detector_params)/config" />
+
+    <!-- object_color_detector_node -->
+    <node pkg="point_cloud_object_color_detector" type="point_cloud_object_color_detector_node" name="point_cloud_object_color_detector_node" output="screen" >
+		<!-- topic name -->
+		<remap from="/camera/depth_registered/points" to="$(arg roomba)/camera/depth_registered/points" />
+        <remap from="/bounding_boxes" to="$(arg roomba)/bounding_boxes" />
+        <remap from="/target_cloud" to="$(arg roomba)/target_cloud" />
+
+        <!-- params -->
+        <param name="HZ" value="$(arg hz)" />
+        <rosparam command="load" file="$(arg color_param_path)/color_param/color_param.yaml" />
+    </node>
+
+    <!-- tf -->
+    <group if="$(arg is_tf)" >
+        <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0.668 0 0 0 1 $(arg roomba)/base_link $(arg roomba)/camera_color_optical_frame" />
+    </group>
+
+	<!-- rviz -->
+    <group if="$(arg is_rviz)" >
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/point_cloud_object_color_detector.rviz" />
+    </group>
+
+</launch>

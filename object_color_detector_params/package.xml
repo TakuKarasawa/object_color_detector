@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>object_color_detector_params</name>
+  <version>0.0.0</version>
+  <description>The object_color_detector_params package</description>
+  <maintainer email="amsl@todo.todo">amsl</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+
+  <export>
+  </export>
+</package>

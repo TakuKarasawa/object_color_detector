@@ -1,10 +1,11 @@
-#include "object_color_detector/object_color_detector.h"
+#include "point_cloud_object_color_detector/point_cloud_object_color_detector.h"
 
-ObjectColorDetector::ObjectColorDetector() :
+PointCloudObjectColorDetector::PointCloudObjectColorDetector() :
     private_nh_("~"),
-    cloud_(new pcl::PointCloud<pcl::PointXYZRGB>),
+    cloud_(new pcl::PointCloud<pcl::PointXYZRGB>()),
     has_received_pc_(false)
 {
+    // load parameter
     private_nh_.param("CAMERA_FRAME_ID",CAMERA_FRAME_ID_,{std::string("base_link")});
     private_nh_.param("TARGET_OBJECT_NAME",TARGET_OBJECT_NAME_,{std::string("roomba")});
     private_nh_.param("IS_PCL_TF",IS_PCL_TF_,{false});
@@ -13,8 +14,13 @@ ObjectColorDetector::ObjectColorDetector() :
     private_nh_.param("CLUSTER_TOLERANCE",CLUSTER_TOLERANCE_,{0.02});
     private_nh_.param("MIN_CLUSTER_SIZE",MIN_CLUSTER_SIZE_,{100});
 
-    pc_sub_ = nh_.subscribe("/camera/depth_registered/points",1,&ObjectColorDetector::pc_callback,this);
-    bbox_sub_ = nh_.subscribe("/bounding_boxes",1,&ObjectColorDetector::bbox_callback,this);
+    // load color_param
+    color_loadr_ptr_ = std::make_shared<ColorLoader>(nh_,private_nh_);
+    color_loadr_ptr_->output_color_params(color_params_);
+
+    pc_sub_ = nh_.subscribe("/camera/depth_registered/points",1,&PointCloudObjectColorDetector::pc_callback,this);
+    bbox_sub_ = nh_.subscribe("/bounding_boxes",1,&PointCloudObjectColorDetector::bbox_callback,this);
+    
     pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/target_cloud",1);
     target_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/clustered_target_cloud",1);
     mask_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/mask_cloud",1);
@@ -22,48 +28,9 @@ ObjectColorDetector::ObjectColorDetector() :
     buffer_.reset(new tf2_ros::Buffer);
     listener_.reset(new tf2_ros::TransformListener(*buffer_));
     broadcaster_.reset(new tf2_ros::TransformBroadcaster);
-
-    load_color_param();
 }
 
-void ObjectColorDetector::load_color_param()
-{
-    if(!private_nh_.getParam("color_param",color_param_list_)){
-        ROS_WARN("Cloud not load color_param_list");
-        return;
-    }
-    ROS_ASSERT(color_param_list_.getType() == XmlRpc::XmlRpcValue::TypeArray);
-    for(int i = 0; i < (int)color_param_list_.size(); i++){
-        if(!color_param_list_[i]["name"].valid() ||
-           !color_param_list_[i]["lower_h"].valid() || !color_param_list_[i]["lower_s"].valid() || !color_param_list_[i]["lower_v"].valid() ||
-           !color_param_list_[i]["upper_h"].valid() || !color_param_list_[i]["upper_s"].valid() || !color_param_list_[i]["upper_v"].valid()){
-            ROS_WARN("object_list is valid");
-            return;
-        }
-        if(color_param_list_[i]["name"].getType() == XmlRpc::XmlRpcValue::TypeString &&
-           color_param_list_[i]["lower_h"].getType() == XmlRpc::XmlRpcValue::TypeInt &&
-           color_param_list_[i]["lower_s"].getType() == XmlRpc::XmlRpcValue::TypeInt &&
-           color_param_list_[i]["lower_v"].getType() == XmlRpc::XmlRpcValue::TypeInt &&
-           color_param_list_[i]["upper_h"].getType() == XmlRpc::XmlRpcValue::TypeInt &&
-           color_param_list_[i]["upper_s"].getType() == XmlRpc::XmlRpcValue::TypeInt &&
-           color_param_list_[i]["upper_v"].getType() == XmlRpc::XmlRpcValue::TypeInt){
-            std::string name = static_cast<std::string>(color_param_list_[i]["name"]);
-            int lower_h = static_cast<int>(color_param_list_[i]["lower_h"]);
-            int lower_s = static_cast<int>(color_param_list_[i]["lower_s"]);
-            int lower_v = static_cast<int>(color_param_list_[i]["lower_v"]);
-            int upper_h = static_cast<int>(color_param_list_[i]["upper_h"]);
-            int upper_s = static_cast<int>(color_param_list_[i]["upper_s"]);
-            int upper_v = static_cast<int>(color_param_list_[i]["upper_v"]);
-
-            HSV lower(lower_h,lower_s,lower_v);
-            HSV upper(upper_h,upper_s,upper_v);
-            ColorParam color_param(name,lower,upper);
-            color_params_.push_back(color_param);
-        }
-    }
-}
-
-void ObjectColorDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
+void PointCloudObjectColorDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
 {
     cloud_->clear();
     pcl::fromROSMsg(*msg,*cloud_);
@@ -83,7 +50,7 @@ void ObjectColorDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& ms
     has_received_pc_ = true;
 }
 
-void ObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg)
+void PointCloudObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg)
 {
     if(has_received_pc_){
         for(const auto &bbox : msg->bounding_boxes){
@@ -115,7 +82,7 @@ void ObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesCon
 
                     int c = 0;
                     for(const auto &value : values){
-                        if(!isnan(value.x) && !isnan(value.y) && !isnan(value.z)){
+                        if(!std::isnan(value.x) && !std::isnan(value.y) && !std::isnan(value.z)){
                             rearranged_cloud->points.at(c).x = value.x;
                             rearranged_cloud->points.at(c).y = value.y;
                             rearranged_cloud->points.at(c).z = value.z;
@@ -138,7 +105,7 @@ void ObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesCon
     }
 }
 
-void ObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
+void PointCloudObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
 {
     pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
     tree->setInputCloud(cloud);
@@ -171,7 +138,7 @@ void ObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clo
     target_pc_pub_.publish(pc_msg);
 }
 
-void ObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
+void PointCloudObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
 {
     std::vector<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> mask_clouds;
     mask_clouds.resize(color_params_.size());
@@ -211,14 +178,14 @@ void ObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Pt
     }
     else{
         std::cout << "COLOR: " << color_params_[max_cost].name << std::endl;
-        sensor_msgs::PointCloud2 pc_msg;
-        pcl::toROSMsg(*mask_clouds[max_cost],pc_msg);
-        pc_msg.header.frame_id = pc_frame_id_;
-        mask_pc_pub_.publish(pc_msg);
     }
+    sensor_msgs::PointCloud2 pc_msg;
+    pcl::toROSMsg(*mask_clouds[max_cost],pc_msg);
+    pc_msg.header.frame_id = pc_frame_id_;
+    mask_pc_pub_.publish(pc_msg);
 }
 
-void ObjectColorDetector::process()
+void PointCloudObjectColorDetector::process()
 {
     ros::Rate rate(HZ_);
     while(ros::ok()){

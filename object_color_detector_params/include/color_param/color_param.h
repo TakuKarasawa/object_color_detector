@@ -2,23 +2,19 @@
 #define COLOR_PARAM_H_
 
 #include <iostream>
+#include "hsv.h"
 
-struct HSV
+class ColorParam
 {
-    HSV() :
-        h(0), s(0), v(0) {}
+public:
+    ColorParam() :
+        name("")
+    {
+        HSV hsv;
+        lower = hsv;
+        upper = hsv;
+    }
 
-    HSV(int _h,int _s,int _v) :
-        h(_h), s(_s), v(_v) {}
-
-    int h;
-    int s;
-    int v;
-};
-
-struct ColorParam
-{
-    ColorParam() {}
     ColorParam(std::string _name,HSV _lower,HSV _upper) :
         name(_name), lower(_lower), upper(_upper) {}
 

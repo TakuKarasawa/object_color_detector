@@ -2,23 +2,19 @@
     "configurations": [
         {
             "browse": {
-                "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+                "databaseFilename": "${default}",
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
                 "/home/amsl/catkin_ws/devel/include/**",
                 "/opt/ros/noetic/include/**",
                 "/home/amsl/catkin_ws/src/darknet_ros/darknet_ros/include/**",
-                "/home/amsl/catkin_ws/src/multi_localization/mcl/include/**",
-                "/home/amsl/catkin_ws/src/multi_map_creator/include/**",
-                "/home/amsl/catkin_ws/src/object_cluster/include/**",
-                "/home/amsl/catkin_ws/src/object_color_detector/include/**",
+                "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include/**",
+                "/home/amsl/catkin_ws/src/object_color_detector/point_cloud_object_color_detector/include/**",
                 "/home/amsl/catkin_ws/src/object_detector/point_cloud_object_detector/include/**",
                 "/usr/include/**",
-                "${workspaceFolder}/include",
                 "/usr/include/pcl-1.10",
-                "/opt/ros/noetic/include",
-                "/home/amsl/catkin_ws/devel/.private/darknet_ros_msgs/include"
+                "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

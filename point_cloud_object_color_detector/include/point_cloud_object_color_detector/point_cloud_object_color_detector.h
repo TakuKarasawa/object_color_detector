@@ -1,5 +1,5 @@
-#ifndef OBJECT_COLOR_DETECTOR_H_
-#define OBJECT_COLOR_DETECTOR_H_
+#ifndef POINT_CLOUD_OBJECT_COLOR_DETECTOR_H_
+#define POINT_CLOUD_OBJECT_COLOR_DETECTOR_H_
 
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
@@ -18,14 +18,15 @@
 #include <Eigen/Dense>
 
 // Custom msg
-#include "color_param/color_param.h"
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
+#include "color_param/color_param.h"
+#include "color_loader/color_loader.h"
 
-class ObjectColorDetector
+class PointCloudObjectColorDetector
 {
 public:
-    ObjectColorDetector();
+    PointCloudObjectColorDetector();
     void process();
 
 private:
@@ -52,15 +53,19 @@ private:
     // point cloud
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_;
 
-    // tf
+    // tf 
     boost::shared_ptr<tf2_ros::Buffer> buffer_;
     boost::shared_ptr<tf2_ros::TransformListener> listener_;
     boost::shared_ptr<tf2_ros::TransformBroadcaster> broadcaster_;
 
     // for loading color param
-    XmlRpc::XmlRpcValue color_param_list_;
+    std::shared_ptr<ColorLoader> color_loadr_ptr_;
     std::vector<ColorParam> color_params_;
 
+    // for clustering
+    static const int CLUSTER_NUM_ = 3;
+
+    // dynamic parameter
     std::string pc_frame_id_;
     bool has_received_pc_;
 
@@ -70,9 +75,8 @@ private:
     bool IS_PCL_TF_;
     int HZ_;
     int COLOR_TH_;
-    static const int CLUSTER_NUM_ = 3;
     double CLUSTER_TOLERANCE_;
     double MIN_CLUSTER_SIZE_;
 };
 
-#endif  // OBJECT_COLOR_DETECTOR_H_
+#endif  // POINT_CLOUD_OBJECT_COLOR_DETECTOR_H_

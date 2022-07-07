@@ -1,22 +1,20 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>object_color_detector</name>
+  <name>mask_image_creator</name>
   <version>0.0.0</version>
-  <description>The object_color_detector package</description>
+  <description>The mask_image_creator package</description>
   <maintainer email="amsl@todo.todo">amsl</maintainer>
   <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>darknet_ros_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>object_detector_msgs</depend>
-  <depend>pcl_ros</depend>
+  <depend>cv_bridge</depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>image_transport</depend>
+  <depend>object_color_detector_params</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>cv_bridge</depend>
-  <depend>image_transport</depend>
 
   <export>
   </export>
