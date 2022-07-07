@@ -9,11 +9,15 @@
                 "/home/amsl/catkin_ws/devel/include/**",
                 "/opt/ros/noetic/include/**",
                 "/home/amsl/catkin_ws/src/darknet_ros/darknet_ros/include/**",
+                "/home/amsl/catkin_ws/src/equirectangular_convertor/include/**",
+                "/home/amsl/catkin_ws/src/object_color_detector/mask_image_creator/include/**",
                 "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include/**",
+                "/home/amsl/catkin_ws/src/object_color_detector/point_cloud_object_color_detector/include/**",
+                "/home/amsl/catkin_ws/src/object_color_detector/color_dynamic_reconfigure/include/**",
                 "/home/amsl/catkin_ws/src/object_detector/point_cloud_object_detector/include/**",
                 "/usr/include/**",
-                "${workspaceFolder}/include",
-                "/home/amsl/catkin_ws/devel/.private/object_color_detector_param/include/object_color_detector_param"
+                "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include",
+                "/opt/ros/noetic/include"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

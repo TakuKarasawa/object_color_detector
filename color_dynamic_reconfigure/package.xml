@@ -1,21 +1,17 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mask_image_creator</name>
+  <name>color_dynamic_reconfigure</name>
   <version>0.0.0</version>
-  <description>The mask_image_creator package</description>
+  <description>The color_dynamic_reconfigure package</description>
   <maintainer email="amsl@todo.todo">amsl</maintainer>
   <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend>cv_bridge</depend>
   <depend>dynamic_reconfigure</depend>
-  <depend>image_transport</depend>
   <depend>object_color_detector_params</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
-  <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>color_dynamic_reconfigure</depend>
 
   <export>
   </export>

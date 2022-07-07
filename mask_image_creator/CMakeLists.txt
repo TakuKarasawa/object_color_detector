@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     rospy
     sensor_msgs
     std_msgs
+    color_dynamic_reconfigure
 )
 
 # OpenCV
