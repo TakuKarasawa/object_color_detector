@@ -1,33 +1,32 @@
 <?xml version="1.0"?>
 <launch>
-	<arg name="roomba" default="roomba1" />
+    <arg name="roomba" default="roomba1" />
     <arg name="is_rviz" default="true" />
-	<arg name="is_window" default="false" />
-	<arg name="is_dr" default="false" />
-	<arg name="is_save" default="false" />
-	<arg name="hz" default="10" />
-	<arg name="config_path" default="$(find mask_image_creator)/config" /> 
-	<arg name="color_param_path" default="$(find object_color_detector_params)/config" />
+    <arg name="is_window" default="false" />
+    <arg name="is_dr" default="false" />
+    <arg name="is_save" default="false" />
+    <arg name="hz" default="10" />
+    <arg name="config_path" default="$(find mask_image_creator)/config" />
+    <arg name="color_param_path" default="$(find object_color_detector_params)/config" />
 
-	<!-- color_reconfigure -->
-	<node pkg="mask_image_creator" type="mask_image_creator_node" name="reconfigure" output="screen" >
-		<!-- topic name -->
+    <!-- color_reconfigure -->
+    <node pkg="mask_image_creator" type="mask_image_creator_node" name="reconfigure" output="screen" >
+        <!-- topic name -->
         <remap from="/camera/color/image_rect_color" to="$(arg roomba)/camera/color/image_rect_color" />
         <remap from="/mask_image" to="$(arg roomba)/mask_image" />
 
         <!-- parameters -->
         <param name="HZ" value="$(arg hz)" />
-		<param name="FILE_NAME" value="$(arg color_param_path)/color_param/new_param.yaml" />
-		<param name="IS_WINDOW" value="$(arg is_window)" />
-		<param name="IS_DR" value="$(arg is_dr)" />
-		<param name="IS_SAVE" value="$(arg is_save)" />
+        <param name="FILE_NAME" value="$(arg color_param_path)/color_param/new_param.yaml" />
+        <param name="IS_WINDOW" value="$(arg is_window)" />
+        <param name="IS_DR" value="$(arg is_dr)" />
+        <param name="IS_SAVE" value="$(arg is_save)" />
         <rosparam command="load" file="$(arg color_param_path)/color_param/color_param.yaml" />
-	</node>
+    </node>
 
-	<!-- rviz -->
+    <!-- rviz -->
     <group if="$(arg is_rviz)" >
         <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/mask_image_creator.rviz" />
     </group>
 
-	
 </launch>

@@ -22,12 +22,12 @@ private:
     void init()
     {
         color_server_ = std::make_shared<dynamic_reconfigure::Server<object_color_detector_params::HsvConfig>>(private_nh_);
-		color_callback = boost::bind(&ColorDynamicReconfigure::callback,this,_1,_2);
-		color_server_->setCallback(color_callback);
+        color_callback = boost::bind(&ColorDynamicReconfigure::callback,this,_1,_2);
+        color_server_->setCallback(color_callback);
     }
 
     void callback(object_color_detector_params::HsvConfig& config,uint32_t level)
-	{
+    {
         for(auto &c : color_params_){
             if(c.name == "RED"){
                 c.lower.h = config.LOWER_RED_H;
@@ -81,14 +81,14 @@ private:
                 std::cout << "No applicable color" << std::endl;
             }
         }
-	}
+    }
 
     // node handle
     ros::NodeHandle private_nh_;
 
     // dynamic reconfigure
-	std::shared_ptr<dynamic_reconfigure::Server<object_color_detector_params::HsvConfig>> color_server_;
-	dynamic_reconfigure::Server<object_color_detector_params::HsvConfig>::CallbackType color_callback;
+    std::shared_ptr<dynamic_reconfigure::Server<object_color_detector_params::HsvConfig>> color_server_;
+    dynamic_reconfigure::Server<object_color_detector_params::HsvConfig>::CallbackType color_callback;
 
     // color param
     std::vector<ColorParam> color_params_;

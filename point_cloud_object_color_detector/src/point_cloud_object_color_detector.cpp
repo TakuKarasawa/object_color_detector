@@ -20,7 +20,7 @@ PointCloudObjectColorDetector::PointCloudObjectColorDetector() :
 
     pc_sub_ = nh_.subscribe("/camera/depth_registered/points",1,&PointCloudObjectColorDetector::pc_callback,this);
     bbox_sub_ = nh_.subscribe("/bounding_boxes",1,&PointCloudObjectColorDetector::bbox_callback,this);
-    
+
     pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/target_cloud",1);
     target_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/clustered_target_cloud",1);
     mask_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/mask_cloud",1);
