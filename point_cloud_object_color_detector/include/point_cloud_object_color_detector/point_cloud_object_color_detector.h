@@ -20,6 +20,8 @@
 // Custom msg
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
+#include "object_color_detector_msgs/ObjectColorPosition.h"
+#include "object_color_detector_msgs/ObjectColorPositions.h"
 #include "color_param/color_param.h"
 #include "color_loader/color_loader.h"
 

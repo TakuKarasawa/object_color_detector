@@ -10,7 +10,7 @@ PointCloudObjectColorDetector::PointCloudObjectColorDetector() :
     private_nh_.param("TARGET_OBJECT_NAME",TARGET_OBJECT_NAME_,{std::string("roomba")});
     private_nh_.param("IS_PCL_TF",IS_PCL_TF_,{false});
     private_nh_.param("HZ",HZ_,{10});
-    private_nh_.param("COLOR_TH",COLOR_TH_,{1000});
+    private_nh_.param("COLOR_TH",COLOR_TH_,{800});
     private_nh_.param("CLUSTER_TOLERANCE",CLUSTER_TOLERANCE_,{0.02});
     private_nh_.param("MIN_CLUSTER_SIZE",MIN_CLUSTER_SIZE_,{100});
 
@@ -173,6 +173,13 @@ void PointCloudObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointX
 
     std::vector<int>::iterator it = std::max_element(counts.begin(),counts.end());
     size_t max_cost = std::distance(counts.begin(),it);
+    /*
+    std::cout << "=== COLOR PCL ===" << std::endl;
+    for(size_t i = 0; i < counts.size(); i++){
+        std::cout << color_params_[i].name << ": " << counts[i] << std::endl;
+    }
+    std::cout << std::endl;
+    */
     if(counts[max_cost] < COLOR_TH_){
         std::cout << "Unknown" << std::endl;
     }

@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
     image_transport
     object_color_detector_params
     object_detector_msgs
+    object_color_detector_msgs
     pcl_ros
     roscpp
     rospy

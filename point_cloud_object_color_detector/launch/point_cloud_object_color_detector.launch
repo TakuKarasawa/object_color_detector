@@ -3,7 +3,7 @@
     <arg name="roomba" default="roomba1" />
     <arg name="is_rviz" default="true" />
     <arg name="is_pcl_tf" default="false" />
-    <arg name="is_tf" default="true" />
+    <arg name="is_tf" default="false" />
     <arg name="hz" default="10" />
     <arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
     <arg name="color_param_path" default="$(find object_color_detector_params)/config" />
