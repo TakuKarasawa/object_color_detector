@@ -36,8 +36,11 @@ private:
     void bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg);
 
     void load_color_param();
-    void clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud);
-    void mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud);
+    void clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clustered_cloud);
+    bool mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                          pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
+                          std::string& color);
 
     // node handle
     ros::NodeHandle nh_;
@@ -48,9 +51,8 @@ private:
     ros::Subscriber bbox_sub_;
 
     // publisher
-    ros::Publisher pc_pub_;
     ros::Publisher target_pc_pub_;
-    ros::Publisher mask_pc_pub_;
+    ros::Publisher obj_color_pub_;
 
     // point cloud
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_;

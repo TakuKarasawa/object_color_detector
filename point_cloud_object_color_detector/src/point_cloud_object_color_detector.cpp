@@ -21,9 +21,8 @@ PointCloudObjectColorDetector::PointCloudObjectColorDetector() :
     pc_sub_ = nh_.subscribe("/camera/depth_registered/points",1,&PointCloudObjectColorDetector::pc_callback,this);
     bbox_sub_ = nh_.subscribe("/bounding_boxes",1,&PointCloudObjectColorDetector::bbox_callback,this);
 
-    pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/target_cloud",1);
-    target_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/clustered_target_cloud",1);
-    mask_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("/mask_cloud",1);
+    target_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("target_cloud",1);
+    obj_color_pub_ =  nh_.advertise<object_color_detector_msgs::ObjectColorPositions>("obj_color",1);   
 
     buffer_.reset(new tf2_ros::Buffer);
     listener_.reset(new tf2_ros::TransformListener(*buffer_));
@@ -53,6 +52,8 @@ void PointCloudObjectColorDetector::pc_callback(const sensor_msgs::PointCloud2Co
 void PointCloudObjectColorDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg)
 {
     if(has_received_pc_){
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged_cloud (new pcl::PointCloud<pcl::PointXYZRGB>());
+        object_color_detector_msgs::ObjectColorPositions positions;
         for(const auto &bbox : msg->bounding_boxes){
             std::vector<pcl::PointXYZRGB> points;
             std::vector<std::vector<pcl::PointXYZRGB>> rearranged_points(cloud_->height,std::vector<pcl::PointXYZRGB>());
@@ -92,20 +93,51 @@ void PointCloudObjectColorDetector::bbox_callback(const darknet_ros_msgs::Boundi
                             c ++;
                         }
                     }
+                    
+                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr clustered_cloud (new pcl::PointCloud<pcl::PointXYZRGB>());
+                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr masked_cloud (new pcl::PointCloud<pcl::PointXYZRGB>());
+                    std::string color;
+                    clustering(rearranged_cloud,clustered_cloud);
+                    if(mask_color_param(clustered_cloud,masked_cloud,color)){        
+                        *merged_cloud += *masked_cloud;
 
-                    clustering(rearranged_cloud);
+                        object_color_detector_msgs::ObjectColorPosition position;
+                        position.color = color;
+                        position.probability = bbox.probability;
+                        double sum_x = 0.0;
+                        double sum_y = 0.0;
+                        double sum_z = 0.0;
+                        c = 0;
+                        for(const auto &mc : masked_cloud->points){
+                            sum_x += mc.x;
+                            sum_y += mc.y;
+                            sum_z += mc.z;
+                            c++;                    
+                        }
+                        position.x = sum_x/(double)c;
+                        position.y = sum_y/(double)c;
+                        position.z = sum_z/(double)c;
+                        positions.object_color_position.emplace_back(position);
 
-                    sensor_msgs::PointCloud2 pc_msg;
-                    pcl::toROSMsg(*rearranged_cloud,pc_msg);
-                    pc_msg.header.frame_id = pc_frame_id_;
-                    pc_pub_.publish(pc_msg);
+                        // std::cout << position.color << std::endl;
+                        // std::cout << "(dist,angle): (" << std::sqrt(std::pow(position.x,2) + std::pow(position.z,2)) << ","
+                                                    //    << std::atan2(position.z,position.x) - 0.5*M_PI << ")" << std::endl;
+                        // std::cout << std::endl;
+                    }
                 }
             }
         }
+        sensor_msgs::PointCloud2 pc_msg;
+        pcl::toROSMsg(*merged_cloud,pc_msg);
+        pc_msg.header.frame_id  = pc_frame_id_;
+        target_pc_pub_.publish(pc_msg);
+
+        if(positions.object_color_position.size() != 0) obj_color_pub_.publish(positions);
     }
 }
 
-void PointCloudObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
+void PointCloudObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                               pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clusterd_cloud)
 {
     pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
     tree->setInputCloud(cloud);
@@ -130,15 +162,13 @@ void PointCloudObjectColorDetector::clustering(pcl::PointCloud<pcl::PointXYZRGB>
     ex->setIndices(tmp_clustered_indices);
     ex->filter(*tmp_cloud);
 
-    mask_color_param(tmp_cloud);
-
-    sensor_msgs::PointCloud2 pc_msg;
-    pcl::toROSMsg(*tmp_cloud,pc_msg);
-    pc_msg.header.frame_id = pc_frame_id_;
-    target_pc_pub_.publish(pc_msg);
+    clusterd_cloud = tmp_cloud; 
+    // pcl::copyPointCloud(*tmp_cloud,*clusterd_cloud)
 }
 
-void PointCloudObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud)
+bool PointCloudObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                                     pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
+                                                     std::string& color)
 {
     std::vector<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> mask_clouds;
     mask_clouds.resize(color_params_.size());
@@ -180,16 +210,19 @@ void PointCloudObjectColorDetector::mask_color_param(pcl::PointCloud<pcl::PointX
     }
     std::cout << std::endl;
     */
-    if(counts[max_cost] < COLOR_TH_){
-        std::cout << "Unknown" << std::endl;
+
+    // pcl::copyPointCloud(*mask_clouds[max_cost],*masked_cloud);
+    masked_cloud = mask_clouds[max_cost];
+    if(counts[max_cost] >= COLOR_TH_){
+        // std::cout << "COLOR: " << color_params_[max_cost].name;
+        color = color_params_[max_cost].name;
+        return true;
     }
     else{
-        std::cout << "COLOR: " << color_params_[max_cost].name << std::endl;
+        // std::cout << "Unknown" << std::endl;
+        color = ""; // Unknown
+        return false;
     }
-    sensor_msgs::PointCloud2 pc_msg;
-    pcl::toROSMsg(*mask_clouds[max_cost],pc_msg);
-    pc_msg.header.frame_id = pc_frame_id_;
-    mask_pc_pub_.publish(pc_msg);
 }
 
 void PointCloudObjectColorDetector::process()
