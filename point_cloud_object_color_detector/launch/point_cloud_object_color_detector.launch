@@ -3,6 +3,7 @@
     <arg name="roomba" default="roomba1" />
     <arg name="is_rviz" default="true" />
     <arg name="is_pcl_tf" default="false" />
+    <arg name="is_debug" default="true" />
     <arg name="is_tf" default="false" />
     <arg name="hz" default="10" />
     <arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
@@ -17,7 +18,10 @@
 
         <!-- params -->
         <param name="HZ" value="$(arg hz)" />
-        <rosparam command="load" file="$(arg color_param_path)/color_param/color_param.yaml" />
+        <param name="IS_PCL_TF" value="$(arg is_pcl_tf)" />
+        <param name="IS_DEBUG" value="$(arg is_debug)" />
+        <rosparam command="load" file="$(arg config_path)/target_objects/target_objects.yaml" />
+        <rosparam command="load" file="$(arg color_param_path)/color_params/color_params.yaml" />
     </node>
 
     <!-- tf -->

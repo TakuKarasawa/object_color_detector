@@ -11,7 +11,7 @@ public:
         private_nh_("~") {}
     ColorLoader(ros::NodeHandle _nh,ros::NodeHandle _private_nh) :
         nh_(_nh), private_nh_(_private_nh) {}
-    
+
     void output_color_params(std::vector<ColorParam>& color_params)
     {
         color_params_.clear();
@@ -23,13 +23,13 @@ public:
 private:
     void load_color_params()
     {
-        private_nh_.param("COLOR_PARAMS_NAME",COLOR_PARAMS_NAME_,{std::string("color_param")});
+        private_nh_.param("COLOR_PARAMS_NAME",COLOR_PARAMS_NAME_,{std::string("color_params")});
         XmlRpc::XmlRpcValue color_param_list;
         if(!private_nh_.getParam(COLOR_PARAMS_NAME_.c_str(),color_param_list)){
             ROS_WARN("Cloud not load color_param_list");
             return;
         }
-        
+
         ROS_ASSERT(color_param_list.getType() == XmlRpc::XmlRpcValue::TypeArray);
         for(int i = 0; i < (int)color_param_list.size(); i++){
             if(!color_param_list[i]["name"].valid() ||

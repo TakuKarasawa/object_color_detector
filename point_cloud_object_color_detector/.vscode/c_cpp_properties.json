@@ -14,7 +14,9 @@
                 "/home/amsl/catkin_ws/src/object_detector/point_cloud_object_detector/include/**",
                 "/usr/include/**",
                 "/usr/include/pcl-1.10",
-                "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include"
+                "/home/amsl/catkin_ws/src/object_color_detector/object_color_detector_params/include",
+                "/opt/ros/noetic/include",
+                "/usr/local/include/eigen3"
             ],
             "name": "ROS",
             "intelliSenseMode": "gcc-x64",

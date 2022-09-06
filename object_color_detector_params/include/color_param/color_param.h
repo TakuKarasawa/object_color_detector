@@ -8,7 +8,7 @@ class ColorParam
 {
 public:
     ColorParam() :
-        name("")
+        name(std::string(""))
     {
         HSV hsv;
         lower = hsv;
@@ -21,6 +21,8 @@ public:
     std::string name;
     HSV lower;
     HSV upper;
+
+private:
 };
 
 #endif  // COLOR_PARAM_H_

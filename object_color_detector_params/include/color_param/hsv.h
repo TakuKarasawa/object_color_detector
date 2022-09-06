@@ -15,6 +15,8 @@ public:
     int h;
     int s;
     int v;
+
+private:
 };
 
 #endif  // HSV_H_

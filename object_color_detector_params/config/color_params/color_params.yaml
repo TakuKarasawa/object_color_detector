@@ -1,5 +1,5 @@
 # color param
-color_param:
+color_params:
   - name: RED
     lower_h: 130
     lower_s: 180

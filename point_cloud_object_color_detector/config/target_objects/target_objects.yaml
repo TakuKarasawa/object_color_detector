@@ -1,0 +1,6 @@
+#
+# "target_objects" is object to determine color
+#
+
+target_objects:
+  - name: roomba

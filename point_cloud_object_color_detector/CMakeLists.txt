@@ -54,3 +54,13 @@ target_link_libraries(point_cloud_object_color_detector_node
     ${catkin_LIBRARIES}
     ${PCL_LIBRARIES}
 )
+
+# point_cloud_object_detector
+add_executable(point_cloud_object_detector_node
+    src/point_cloud_object_detector.cpp
+    src/point_cloud_object_detector_node.cpp
+)
+target_link_libraries(point_cloud_object_detector_node
+    ${catkin_LIBRARIES}
+    ${PCL_LIBRARIES}
+)
