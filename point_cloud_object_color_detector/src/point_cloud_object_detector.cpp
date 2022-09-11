@@ -69,7 +69,7 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
                 }
             }else{
                 ROS_WARN("points size is not cloud size");
-                return
+                return;
             }
 
             std::vector<pcl::PointXYZRGB> values;
