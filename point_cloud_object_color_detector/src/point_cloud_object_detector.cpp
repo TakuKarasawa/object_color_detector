@@ -21,6 +21,7 @@ PointCloudObjectDetector::PointCloudObjectDetector() :
 
     ops_pub_ = nh_.advertise<object_detector_msgs::ObjectPositions>("od_out",1);
     ocps_pub_ = nh_.advertise<object_color_detector_msgs::ObjectColorPositions>("ocd_out",1);
+    bbox_pub_ = nh_.advertise<object_detector_msgs::BoundingBox3DArray>("bbox_out",1);
     if(IS_DEBUG_){
         ops_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("od_pc_out",1);
         ocps_pc_pub_ = nh_.advertise<sensor_msgs::PointCloud2>("ocd_pc_out",1);
@@ -56,6 +57,8 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
         ops.header.frame_id = CAMERA_FRAME_ID_;
         object_color_detector_msgs::ObjectColorPositions ocps;
         ocps.header.frame_id = CAMERA_FRAME_ID_;
+        object_detector_msgs::BoundingBox3DArray bboxes_msg;
+        bboxes_msg.header.frame_id = CAMERA_FRAME_ID_;
         for(const auto &bbox : msg->bounding_boxes){
             std::vector<pcl::PointXYZRGB> points;
             for(const auto &p : cloud_->points) points.emplace_back(p);
@@ -111,6 +114,12 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
                     op.probability = bbox.probability;
                     calc_position(clu_op_cloud,op.x,op.y,op.z);
                     ops.object_position.emplace_back(op);
+
+                    object_detector_msgs::BoundingBox3D bbox_msg;
+                    bbox_msg.name = bbox.Class;
+                    bbox_msg.probability = bbox.probability;
+                    calc_bbox(clu_op_cloud,bbox_msg);
+                    bboxes_msg.boxes.emplace_back(bbox_msg);
                 }
             }
             else{
@@ -137,6 +146,9 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
             ops.header.stamp = now_time;
             print_ops(ops);
             ops_pub_.publish(ops);
+
+            bboxes_msg.header.stamp = now_time;
+            bbox_pub_.publish(bboxes_msg);
         }
 
         if(ocps.object_color_position.size() != 0){
@@ -146,6 +158,7 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
         }
 
         has_received_pc_= false;
+        cloud_->clear();
     }
 }
 
@@ -183,6 +196,44 @@ void PointCloudObjectDetector::calc_position(pcl::PointCloud<pcl::PointXYZRGB>::
     x = sum_x/(double)count;
     y = sum_y/(double)count;
     z = sum_z/(double)count;
+}
+
+void PointCloudObjectDetector::calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                         object_detector_msgs::BoundingBox3D& bbox_msg)
+{
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    double sum_z = 0.0;
+
+    int count = 0;
+    double x_max = cloud->points.at(0).x;
+    double x_min = cloud->points.at(0).x;
+    double y_max = cloud->points.at(0).y;
+    double y_min = cloud->points.at(0).y;
+    double z_max = cloud->points.at(0).z;
+    double z_min = cloud->points.at(0).z;
+    for(const auto &p : cloud->points){
+        if(x_max < p.x) x_max = p.x;
+        if(x_min > p.x) x_min = p.x;
+        if(y_max < p.y) y_max = p.y;
+        if(y_min > p.y) y_min = p.y;
+        if(y_max < p.z) z_max = p.z;
+        if(y_min > p.z) z_min = p.z;
+
+        sum_x += p.x;
+        sum_y += p.y;
+        sum_z += p.z;
+        count++;
+    }
+    bbox_msg.x = sum_x/(double)count;
+    bbox_msg.y = sum_y/(double)count;
+    bbox_msg.z = sum_z/(double)count;
+    bbox_msg.x_max = x_max;
+    bbox_msg.x_min = x_min;
+    bbox_msg.y_max = y_max;
+    bbox_msg.y_min = y_min;
+    bbox_msg.z_max = z_max;
+    bbox_msg.z_min = z_min;
 }
 
 void PointCloudObjectDetector::cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,

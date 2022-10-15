@@ -1,7 +1,7 @@
 #ifndef POINT_CLOUD_OBJECT_DETECTOR_H_
 #define POINT_CLOUD_OBJECT_DETECTOR_H_
 
-// ROS
+// ros
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -11,7 +11,7 @@
 #include <pcl_ros/point_cloud.h>
 #include <pcl_ros/transforms.h>
 
-// PCL
+// pcl
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
@@ -21,11 +21,9 @@
 #include <Eigen/Dense>
 
 // Custom msg
-#include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
-#include "object_detector_msgs/ObjectPosition.h"
 #include "object_detector_msgs/ObjectPositions.h"
-#include "object_color_detector_msgs/ObjectColorPosition.h"
+#include "object_detector_msgs/BoundingBox3DArray.h"
 #include "object_color_detector_msgs/ObjectColorPositions.h"
 
 // for loading yaml file
@@ -46,6 +44,8 @@ private:
                                 pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc);
     void calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
                        double& x,double& y,double& z);
+    void calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                   object_detector_msgs::BoundingBox3D& bbox_msg);
     void cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
                     pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clu_cloud);
     bool mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
@@ -69,6 +69,7 @@ private:
     ros::Publisher ocps_pub_;
     ros::Publisher ops_pc_pub_;
     ros::Publisher ocps_pc_pub_;
+    ros::Publisher bbox_pub_;
 
     // point cloud
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_;

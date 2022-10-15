@@ -1,10 +1,8 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="roomba" default="roomba1" />
-    <arg name="is_rviz" default="true" />
-    <!-- <arg name="is_pcl_tf" default="false" /> -->
-    <!-- <arg name="is_tf" default="false" /> -->
     <arg name="hz" default="10" />
+    <arg name="is_debug" default="false" />
     <arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
     <arg name="color_param_path" default="$(find object_color_detector_params)/config" />
 
@@ -13,22 +11,24 @@
         <!-- topic name -->
         <remap from="/pc_in" to="$(arg roomba)/camera/depth_registered/points" />
         <remap from="/bbox_in" to="$(arg roomba)/bounding_boxes" />
-        <!-- <remap from="/target_cloud" to="$(arg roomba)/target_cloud" /> -->
+        <remap from="/od_out" to="$(arg roomba)/object_positions" />
+        <remap from="/ocd_out" to="$(arg roomba)/object_color_positions" />
+
+        <remap from="od_pc_out" to="$(arg roomba)/op_cloud" />
+        <remap from="ocd_pc_out" to="$(arg roomba)/ocp_cloud" />
 
         <!-- params -->
+        <param name="IS_DEBUG" value="$(arg is_debug)" />
         <param name="HZ" value="$(arg hz)" />
+        <param name="COLOR_TH" value="300" />
         <rosparam command="load" file="$(arg config_path)/target_objects/target_objects.yaml" />
-        <rosparam command="load" file="$(arg color_param_path)/color_params/color_params.yaml" />
+        <rosparam command="load" file="$(arg color_param_path)/color_params/$(arg roomba)/color_params.yaml" />
     </node>
 
-    <!-- tf -->
-    <!-- <group if="$(arg is_tf)" > -->
-        <!-- <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0.668 0 0 0 1 $(arg roomba)/base_link $(arg roomba)/camera_color_optical_frame" /> -->
-    <!-- </group> -->
-
     <!-- rviz -->
+    <arg name="is_rviz" default="false" />
     <group if="$(arg is_rviz)" >
-        <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/point_cloud_object_detector.rviz" />
+        <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg config_path)/rviz/$(arg roomba)/point_cloud_object_detector.rviz" />
     </group>
 
 </launch>
