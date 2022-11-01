@@ -10,7 +10,7 @@ MaskImageCreator::MaskImageCreator() :
     private_nh_.param("IS_SAVE",IS_SAVE_,{false});
     private_nh_.param("HZ",HZ_,{10});
 
-    // color_loader
+    // color_loader (rm)
     color_loader_ptr_ = std::make_shared<ColorLoader>(nh_,private_nh_);
     color_loader_ptr_->output_color_params(color_params_);
 
