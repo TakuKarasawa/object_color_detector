@@ -3,6 +3,8 @@
 
 #include <ros/ros.h>
 
+namespace object_color_detector
+{
 class TargetObjects : public std::vector<std::string>
 {
 public:
@@ -50,5 +52,6 @@ private:
 
     ros::NodeHandle private_nh_;
 };
+}
 
 #endif	// TARGET_OBJECTS_H_

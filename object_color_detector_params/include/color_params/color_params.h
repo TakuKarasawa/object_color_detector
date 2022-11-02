@@ -2,9 +2,10 @@
 #define COLOR_PARAMS_H_
 
 #include <ros/ros.h>
-
 #include "color_param/color_param.h"
 
+namespace object_color_detector
+{
 class ColorParams : public std::vector<ColorParam>
 {
 public:
@@ -13,6 +14,42 @@ public:
 
     ColorParams(ros::NodeHandle _private_nh) :
         private_nh_(_private_nh) { load_yaml(); }
+
+    void output_color_params(std::vector<ColorParam>& color_params)
+    {
+        color_params.clear();
+        for(auto it = this->begin(); it != this->end(); it++){
+            ColorParam color_param(it->name,it->lower,it->upper);
+            color_params.emplace_back(color_param);
+        }
+    }
+
+    void output_color_param(ColorParam& color_param,std::string color)
+    {
+        for(auto it = this->begin(); it != this->end(); it++){
+            if(it->name == color){
+                color_param.name = color;
+                color_param.lower = it->lower;
+                color_param.upper = it->upper;
+            }
+        }
+    }    
+
+    HSV get_lower(std::string color)
+    {
+        for(auto it = this->begin(); it != this->end(); it++){
+            if(it->name == color) return it->lower;
+        }
+        return HSV();
+    }
+
+    HSV get_upper(std::string color)
+    {
+        for(auto it = this->begin(); it != this->end(); it++){
+            if(it->name == color) return it->upper;
+        }
+        return HSV();
+    }
 
     // for debug
     void print_elements()
@@ -73,5 +110,6 @@ private:
 
     ros::NodeHandle private_nh_;
 };
+}
 
 #endif  // COLOR_PARAMS_H_

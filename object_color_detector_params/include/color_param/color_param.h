@@ -4,16 +4,13 @@
 #include <iostream>
 #include "hsv.h"
 
+namespace object_color_detector
+{
 class ColorParam
 {
 public:
     ColorParam() :
-        name(std::string(""))
-    {
-        HSV hsv;
-        lower = hsv;
-        upper = hsv;
-    }
+        name(std::string("")), lower(HSV()), upper(HSV()) {}
 
     ColorParam(std::string _name,HSV _lower,HSV _upper) :
         name(_name), lower(_lower), upper(_upper) {}
@@ -24,5 +21,6 @@ public:
 
 private:
 };
+}
 
 #endif  // COLOR_PARAM_H_

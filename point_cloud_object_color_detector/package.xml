@@ -9,7 +9,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <depend>cv_bridge</depend>
   <depend>darknet_ros_msgs</depend>
-  <depend>dynamic_reconfigure</depend>
   <depend>geometry_msgs</depend>
   <depend>image_transport</depend>
   <depend>object_color_detector_params</depend>

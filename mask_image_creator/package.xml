@@ -8,14 +8,12 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <depend>cv_bridge</depend>
-  <depend>dynamic_reconfigure</depend>
   <depend>image_transport</depend>
   <depend>object_color_detector_params</depend>
   <depend>roscpp</depend>
   <depend>rospy</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>color_dynamic_reconfigure</depend>
 
   <export>
   </export>

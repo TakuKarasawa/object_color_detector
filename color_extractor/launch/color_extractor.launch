@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-	<arg name="roomba" default="roomba1" />
-
-	<node pkg="color_extractor" type="color_extractor_node" name="color_extractor" output="screen" >
-		<remap from="img_in" to="$(arg roomba)/camera/color/image_rect_color" />
-	</node>
-
-</launch>

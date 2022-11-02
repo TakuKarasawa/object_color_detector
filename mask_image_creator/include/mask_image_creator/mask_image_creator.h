@@ -10,16 +10,22 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-// Custom msg
-#include "color_param/color_param.h"
-#include "color_loader/color_loader.h"
+// utility
+#include "color_params/color_params.h"
 #include "color_saver/color_saver.h"
-#include "color_dynamic_reconfigure/color_dynamic_reconfigure.h"
+
+namespace object_color_detector
+{
+enum Mode
+{
+    VIWER = 0,
+    EXTRACTOR = 1
+};
 
 class MaskImageCreator
 {
 public:
-    MaskImageCreator();
+    MaskImageCreator(Mode _mode,std::string _targte_color);
     ~MaskImageCreator();
     void process();
 
@@ -38,23 +44,23 @@ private:
     image_transport::ImageTransport it_;
     image_transport::Publisher image_pub_;
 
-    // color_reconfigure
-    std::shared_ptr<ColorDynamicReconfigure> color_dr_ptr_;
-
-    // color_loader
-    std::shared_ptr<ColorLoader> color_loader_ptr_;
-    std::vector<ColorParam> color_params_;
+    // color_params
+    ColorParams* color_params_ptr_;
 
     // color_saver
-    std::shared_ptr<ColorSaver> color_saver_ptr_;
+    ColorSaver* color_saver_ptr_;
+
+    // buffer
+    Mode mode_;
+    std::string target_color_;
 
     // parameters
     std::string WINDOW_NAME_;
-    std::string FILE_NAME_;
-    bool IS_WINDOW_;
-    bool IS_DR_;
+    std::string FILE_PATH_;
     bool IS_SAVE_;
-    int HZ_;
+    HSV lower_;
+    HSV upper_;
 };
+}
 
 #endif  // MASK_IMAGE_CREATOR_H_

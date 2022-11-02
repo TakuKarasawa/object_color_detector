@@ -27,6 +27,8 @@
 #include "target_objects/target_objects.h"
 #include "color_params/color_params.h"
 
+namespace object_color_detector
+{
 class PointCloudObjectColorDetector
 {
 public:
@@ -92,5 +94,6 @@ private:
     double CLUSTER_TOLERANCE_;
     double MIN_CLUSTER_SIZE_;
 };
+}
 
 #endif  // POINT_CLOUD_OBJECT_COLOR_DETECTOR_H_

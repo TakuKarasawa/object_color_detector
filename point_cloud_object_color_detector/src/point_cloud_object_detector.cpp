@@ -1,6 +1,6 @@
 #include "point_cloud_object_detector/point_cloud_object_detector.h"
 
-PointCloudObjectDetector::PointCloudObjectDetector() :
+object_color_detector::PointCloudObjectDetector::PointCloudObjectDetector() :
     private_nh_("~"),
     cloud_(new pcl::PointCloud<pcl::PointXYZRGB>),
     buffer_(new tf2_ros::Buffer), listener_(new tf2_ros::TransformListener(*buffer_)),broadcaster_(new tf2_ros::TransformBroadcaster),
@@ -28,7 +28,7 @@ PointCloudObjectDetector::PointCloudObjectDetector() :
     }
 }
 
-void PointCloudObjectDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
+void object_color_detector::PointCloudObjectDetector::pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg)
 {
     cloud_->clear();
     pcl::fromROSMsg(*msg,*cloud_);
@@ -48,7 +48,7 @@ void PointCloudObjectDetector::pc_callback(const sensor_msgs::PointCloud2ConstPt
     has_received_pc_ = true;
 }
 
-void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg)
+void object_color_detector::PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg)
 {
     if(has_received_pc_){
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr merged_op_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -162,8 +162,8 @@ void PointCloudObjectDetector::bbox_callback(const darknet_ros_msgs::BoundingBox
     }
 }
 
-void PointCloudObjectDetector::convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,
-                                                      pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc)
+void object_color_detector::PointCloudObjectDetector::convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,
+                                                                             pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc)
 {
     int count = 0;
     for(const auto &v : vec){
@@ -179,8 +179,8 @@ void PointCloudObjectDetector::convert_from_vec_to_pc(std::vector<pcl::PointXYZR
     }
 }
 
-void PointCloudObjectDetector::calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                                             double& x,double& y,double& z)
+void object_color_detector::PointCloudObjectDetector::calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                                                    double& x,double& y,double& z)
 {
     double sum_x = 0.0;
     double sum_y = 0.0;
@@ -198,8 +198,8 @@ void PointCloudObjectDetector::calc_position(pcl::PointCloud<pcl::PointXYZRGB>::
     z = sum_z/(double)count;
 }
 
-void PointCloudObjectDetector::calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                                         object_detector_msgs::BoundingBox3D& bbox_msg)
+void object_color_detector::PointCloudObjectDetector::calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                                                object_detector_msgs::BoundingBox3D& bbox_msg)
 {
     double sum_x = 0.0;
     double sum_y = 0.0;
@@ -236,8 +236,8 @@ void PointCloudObjectDetector::calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr&
     bbox_msg.z_min = z_min;
 }
 
-void PointCloudObjectDetector::cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                                          pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clu_cloud)
+void object_color_detector::PointCloudObjectDetector::cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                                                 pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clu_cloud)
 {
     pcl::search::KdTree<pcl::PointXYZRGB>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZRGB>);
     tree->setInputCloud(cloud);
@@ -265,9 +265,9 @@ void PointCloudObjectDetector::cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr
     clu_cloud = tmp_cloud;
 }
 
-bool PointCloudObjectDetector::mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                                                 pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
-                                                 std::string& color)
+bool object_color_detector::PointCloudObjectDetector::mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+                                                                        pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
+                                                                        std::string& color)
 {
     class MaskCloud
     {
@@ -330,7 +330,7 @@ bool PointCloudObjectDetector::mask_color_params(pcl::PointCloud<pcl::PointXYZRG
     }
 }
 
-void PointCloudObjectDetector::print_ops(object_detector_msgs::ObjectPositions ops)
+void object_color_detector::PointCloudObjectDetector::print_ops(object_detector_msgs::ObjectPositions ops)
 {
     for(const auto &op : ops.object_position){
         double dist = std::sqrt(op.x*op.x + op.z*op.z);
@@ -341,7 +341,7 @@ void PointCloudObjectDetector::print_ops(object_detector_msgs::ObjectPositions o
     std::cout << std::endl;
 }
 
-void PointCloudObjectDetector::print_ocps(object_color_detector_msgs::ObjectColorPositions ocps)
+void object_color_detector::PointCloudObjectDetector::print_ocps(object_color_detector_msgs::ObjectColorPositions ocps)
 {
     for(const auto &ocp : ocps.object_color_position){
         double dist = std::sqrt(ocp.x*ocp.x + ocp.z*ocp.z);
@@ -351,7 +351,7 @@ void PointCloudObjectDetector::print_ocps(object_color_detector_msgs::ObjectColo
     }
 }
 
-void PointCloudObjectDetector::process()
+void object_color_detector::PointCloudObjectDetector::process()
 {
     ros::Rate rate(HZ_);
     while(ros::ok()){

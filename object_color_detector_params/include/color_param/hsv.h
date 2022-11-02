@@ -1,8 +1,8 @@
 #ifndef HSV_H_
 #define HSV_H_
 
-#include <iostream>
-
+namespace object_color_detector
+{
 class HSV
 {
 public:
@@ -18,5 +18,6 @@ public:
 
 private:
 };
+}
 
 #endif  // HSV_H_

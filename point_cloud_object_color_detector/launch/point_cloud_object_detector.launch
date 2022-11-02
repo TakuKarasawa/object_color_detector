@@ -1,26 +1,27 @@
 <?xml version="1.0"?>
 <launch>
     <arg name="roomba" default="roomba1" />
+    <arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
     <arg name="hz" default="10" />
     <arg name="is_debug" default="false" />
-    <arg name="config_path" default="$(find point_cloud_object_color_detector)/config" />
     <arg name="color_param_path" default="$(find object_color_detector_params)/config" />
 
     <!-- object_color_detector_node -->
     <node pkg="point_cloud_object_color_detector" type="point_cloud_object_detector_node" name="point_cloud_object_detector" output="screen" >
-        <!-- topic name -->
-        <remap from="/pc_in" to="$(arg roomba)/camera/depth_registered/points" />
-        <remap from="/bbox_in" to="$(arg roomba)/bounding_boxes" />
-        <remap from="/od_out" to="$(arg roomba)/object_positions" />
-        <remap from="/ocd_out" to="$(arg roomba)/object_color_positions" />
-
-        <remap from="od_pc_out" to="$(arg roomba)/op_cloud" />
+        <!-- remap -->
+        <remap from="pc_in"     to="$(arg roomba)/camera/depth_registered/points" />
+        <remap from="bbox_in"   to="$(arg roomba)/bounding_boxes" />
+        <remap from="od_out"    to="$(arg roomba)/object_positions" />
+        <remap from="ocd_out"   to="$(arg roomba)/object_color_positions" />
+        <remap from="od_pc_out"  to="$(arg roomba)/op_cloud" />
         <remap from="ocd_pc_out" to="$(arg roomba)/ocp_cloud" />
 
         <!-- params -->
         <param name="IS_DEBUG" value="$(arg is_debug)" />
-        <param name="HZ" value="$(arg hz)" />
-        <param name="COLOR_TH" value="300" />
+        <param name="HZ"       value="$(arg hz)" />
+        <param name="COLOR_TH" value="80" />
+
+        <!-- rosparam -->
         <rosparam command="load" file="$(arg config_path)/target_objects/target_objects.yaml" />
         <rosparam command="load" file="$(arg color_param_path)/color_params/$(arg roomba)/color_params.yaml" />
     </node>

@@ -4,7 +4,6 @@ project(point_cloud_object_color_detector)
 find_package(catkin REQUIRED COMPONENTS
     cv_bridge
     darknet_ros_msgs
-    dynamic_reconfigure
     geometry_msgs
     image_transport
     object_color_detector_params

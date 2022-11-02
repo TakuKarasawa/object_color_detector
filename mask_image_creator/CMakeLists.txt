@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(mask_image_creator)
 
+add_compile_options(-o2 -g -Wall)
+
 find_package(catkin REQUIRED COMPONENTS
     cv_bridge
-    dynamic_reconfigure
     image_transport
     object_color_detector_params
     roscpp
     rospy
     sensor_msgs
     std_msgs
-    color_dynamic_reconfigure
 )
 
 # OpenCV
