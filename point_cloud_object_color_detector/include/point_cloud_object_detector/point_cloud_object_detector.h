@@ -42,17 +42,11 @@ private:
     void pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg);
     void bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg);
 
-    void convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,
-                                pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc);
-    void calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                       double& x,double& y,double& z);
-    void calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                   object_detector_msgs::BoundingBox3D& bbox_msg);
-    void cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clu_cloud);
-    bool mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                           pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
-                           std::string& color);
+    void convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc);
+    void calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,double& x,double& y,double& z);
+    void calc_bbox(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,object_detector_msgs::BoundingBox3D& bbox_msg);
+    void cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clu_cloud);
+    bool mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,std::string& color);
 
     // for debug
     void print_ops(object_detector_msgs::ObjectPositions ops);
@@ -103,6 +97,6 @@ private:
     double CLUSTER_TOLERANCE_;
     double MIN_CLUSTER_SIZE_;
 };
-}
+} // namespace object_color_detector
 
 #endif	// POINT_CLOUD_OBJECT_DETECTOR_H_

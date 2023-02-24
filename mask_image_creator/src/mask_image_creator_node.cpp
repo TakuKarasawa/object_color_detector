@@ -28,6 +28,5 @@ int main(int argc,char** argv)
             mask_image_creator.process();
         }
     }
-
     return 0;
 }

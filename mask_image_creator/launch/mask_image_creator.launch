@@ -3,19 +3,23 @@
     <arg name="roomba" default="roomba1" />
     <arg name="config_path" default="$(find mask_image_creator)/config" />
 
-    <!-- mask_image_creator_node -->
-    <arg name="mode" default="viwer" />
-    <arg name="target_color" default="GREEN" />
-    <arg name="is_save" default="false" />
+    <!-- mask_image_creator_node params -->
+    <arg name="mode"             default="viwer" />
+    <arg name="target_color"     default="GREEN" />
+    <arg name="is_save"          default="false" />
     <arg name="color_param_path" default="$(find object_color_detector_params)/config/color_params" />
+    
+    <!-- mask_image_creator_node -->
     <node pkg="mask_image_creator" type="mask_image_creator_node" name="reconfigure" output="screen" args="$(arg mode) $(arg target_color)" >
         <!-- remap -->
-        <remap from="/camera/color/image_rect_color" to="$(arg roomba)/camera/color/image_rect_color" />
-        <remap from="/mask_image"                    to="$(arg roomba)/mask_image" />
+        <remap from="/img_in"  to="$(arg roomba)/camera/color/image_rect_color" />
+        <remap from="/img_out" to="$(arg roomba)/mask_image" />
 
-        <!-- parameters -->
+        <!-- params -->
         <param name="FILE_PATH" value="$(arg color_param_path)/" />
-        <param name="IS_SAVE" value="$(arg is_save)" />
+        <param name="IS_SAVE"   value="$(arg is_save)" />
+        
+        <!-- rosparam -->
         <rosparam command="load" file="$(arg color_param_path)/color_params.yaml" />
     </node>
 

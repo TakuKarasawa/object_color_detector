@@ -8,6 +8,8 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 #include <pcl_ros/point_cloud.h>
+
+// pcl
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/filters/extract_indices.h>
@@ -39,15 +41,10 @@ private:
     void pc_callback(const sensor_msgs::PointCloud2ConstPtr& msg);
     void bbox_callback(const darknet_ros_msgs::BoundingBoxesConstPtr& msg);
 
-    void cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                    pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clustered_cloud);
-    void convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,
-                                pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc);
-    void calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                       double& x,double& y,double& z);
-    bool mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
-                           pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,
-                           std::string& color);
+    void cluster_pc(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& clustered_cloud);
+    void convert_from_vec_to_pc(std::vector<pcl::PointXYZRGB>& vec,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& pc);
+    void calc_position(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,double& x,double& y,double& z);
+    bool mask_color_params(pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,pcl::PointCloud<pcl::PointXYZRGB>::Ptr& masked_cloud,std::string& color);
 
     // for debug
     void print_ocps(object_color_detector_msgs::ObjectColorPositions ocps);
@@ -94,6 +91,6 @@ private:
     double CLUSTER_TOLERANCE_;
     double MIN_CLUSTER_SIZE_;
 };
-}
+} // namespace object_color_detector
 
 #endif  // POINT_CLOUD_OBJECT_COLOR_DETECTOR_H_

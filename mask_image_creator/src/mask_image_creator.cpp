@@ -1,9 +1,12 @@
 #include "mask_image_creator/mask_image_creator.h"
 
-object_color_detector::MaskImageCreator::MaskImageCreator(Mode _mode,std::string _target_color) :
-    private_nh_("~"), it_(nh_),
+using namespace object_color_detector;
+
+MaskImageCreator::MaskImageCreator(Mode _mode,std::string _target_color) :
+    private_nh_("~"), 
     color_params_ptr_(new ColorParams(private_nh_)),
-    mode_(_mode), target_color_(_target_color)
+    mode_(_mode), 
+    target_color_(_target_color)
 {
     private_nh_.param("FILE_PATH",FILE_PATH_,{std::string("")});
 
@@ -26,11 +29,11 @@ object_color_detector::MaskImageCreator::MaskImageCreator(Mode _mode,std::string
         upper_ = color_params_ptr_->get_upper(target_color_);
     }
 
-    image_sub_ = nh_.subscribe("/camera/color/image_rect_color",1,&MaskImageCreator::image_callback,this);
-    image_pub_ = it_.advertise("/mask_image",1);    
+    image_sub_ = nh_.subscribe("/img_in",1,&MaskImageCreator::image_callback,this);
+    image_pub_ = nh_.advertise<sensor_msgs::Image>("img_out",1);  
 }
 
-object_color_detector::MaskImageCreator::~MaskImageCreator() 
+MaskImageCreator::~MaskImageCreator() 
 { 
     cv::destroyAllWindows();
     if(mode_ == Mode::EXTRACTOR){
@@ -53,7 +56,7 @@ object_color_detector::MaskImageCreator::~MaskImageCreator()
     }
 }
 
-void object_color_detector::MaskImageCreator::image_callback(const sensor_msgs::ImageConstPtr& msg)
+void MaskImageCreator::image_callback(const sensor_msgs::ImageConstPtr& msg)
 {
     cv_bridge::CvImagePtr cv_ptr;
     try{
@@ -66,7 +69,7 @@ void object_color_detector::MaskImageCreator::image_callback(const sensor_msgs::
     }
 }
 
-void object_color_detector::MaskImageCreator::mask_image(cv::Mat& img)
+void MaskImageCreator::mask_image(cv::Mat& img)
 {
     cv::Mat hsv_img, mask_img, output_img;
     cv::cvtColor(img,hsv_img,CV_BGR2HSV,3);
@@ -84,8 +87,9 @@ void object_color_detector::MaskImageCreator::mask_image(cv::Mat& img)
     cv::imshow(WINDOW_NAME_,base);
     cv::waitKey(10);
 
+    
     sensor_msgs::ImagePtr img_msg = cv_bridge::CvImage(std_msgs::Header(),"bgr8",output_img).toImageMsg();
     image_pub_.publish(img_msg);
 }
 
-void object_color_detector::MaskImageCreator::process() { ros::spin(); }
+void MaskImageCreator::process() { ros::spin(); }

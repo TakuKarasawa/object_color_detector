@@ -52,6 +52,6 @@ private:
 
     ros::NodeHandle private_nh_;
 };
-}
+} // namespace object_color_detector
 
 #endif	// TARGET_OBJECTS_H_
